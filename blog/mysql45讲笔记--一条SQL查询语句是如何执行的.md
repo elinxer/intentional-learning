@@ -12,7 +12,7 @@ mysql> select * from T where id = 10;
 
 
 
-![](E:\gin\intentional-learning\learingMysql\mysql45\picture\mysql45-01-01.png)
+![image text](https://github.com/dddygin/intentional-learning/blob/master/learingMysql/mysql45/picture/mysql45-01-01.gif)
 
 <div align=center style="color:#888888;">MySQL逻辑架构图</div>
 MySQL 可以分成Server层和存储引擎两大部分
@@ -42,7 +42,7 @@ mysql -h$ip -P$port -u$user -p
 
 连接完成后如果没有后续的动作连接就会处于空闲状态，可以使用`show processlist`命令查看连接，在Command列相似为"Sleep"的这一行表示当前连接空闲。
 
-![](E:\gin\intentional-learning\learingMysql\mysql45\picture\mysql45-01-02.png)
+![image text](https://github.com/dddygin/intentional-learning/blob/master/learingMysql/mysql45/picture/mysql45-01-02.gif)
 
 如果时间太长没有进行操作，连接器就会自动断开，这个时间的参数是由wait_timeout控制的，默认值是8小时
 
@@ -53,7 +53,7 @@ show global variables like 'wait_timeout';
 set global wait_timeout=14400;
 ```
 
-![](E:\gin\intentional-learning\learingMysql\mysql45\picture\mysql45-01-03.png)
+![image text](https://github.com/dddygin/intentional-learning/blob/master/learingMysql/mysql45/picture/mysql45-01-03.gif)
 
 如果连接被断开之后，客户端在发送请求就和收到一个 ”Lost connection to MySQL server during query"的错误，这时需要重连再执行请求。
 
@@ -81,32 +81,77 @@ set global wait_timeout=14400;
 
 MySQL 拿到查询缓存请求后，会先到查询缓存看看，是否之前有执行过这条语句。因为之前执行过的语句会以key-value对的形式被缓存在内存中。key：语句，value：返回的数据。如果能够找到对应的语句key，那么value结果就直接返回给客户端。
 
+如果没有命中缓存的，就要往下执行，执行完成后，返回的结果将会被存到查询缓存中，如果命中缓存就不需要执行后面的流程就可以直接返回给客户端，这个效率很高。
 
+**但大多数状态下我们是不建议使用查询缓存的，因为利大于弊**
 
+查询缓存失效时非常频繁的，只要对一个表进行更新，这个表上的查询缓存将会全部被情空，对于更新频繁的数据库来说，命中查询缓存的概率时特别低的。除非你的业务时张静态表，很长时间才更新一次，如系统配置表。
 
+MySQL也提供了“按需使用”方式 可以将query_cache_type设置为DEMAND，这样数据就默认不会使用查询缓存，而需要查询缓存的可以通过SQL_CACHE显示指定
 
+```mysql
+select SQL_CACHE * from T where id>1;
+```
 
+需要注意的时MySQL8.0开始删除了查询缓存整一个模块
 
+> （工程实现上，如果命中查询缓存，就会在返回结果的时候做权限验证）
+>
 
+## 分析器
 
+没有命中查询缓存所以要进入下个逻辑模块，分析器。
 
+分析器会先做“词法分析”。输入的sql是由那些字符串组成，如识别到“select”关键字就是查询语句，识别到 T 就是表T等等。
 
+做完词法分析就要做“语法分析” 根据词法分析获取的结果检查语法是否符合MySQL语法
 
+语义分析，判断是否有权限访问该表，或者表/列存不存在等
 
+如果语法不对就会收到 You hava an error in your SQL syntax的错误
 
+一般语法的第一个错误位置是“use near”之后
 
+> 分析器也会进行precheck权限验证，判断是否对该表拥有操作权限
 
+## 优化器
 
+经过了分析的检验，在进入执行前需要进如优化器。
 
+优化器是在表里面由多个索引的时候，决定用那个索引；或者一个语句有多个表join的时候各表的连接顺序 如下面的例子
 
+```mysql
+mysql> select * from t1 join t2 using(id) where t1.c=10 and t2.d=20;
+```
 
+先取t1表中的数据和先取t2表中的数据效率是不同的（如先取t1 假设是10，关联t2是100；先取t2是100 关联t1是10条）
 
+## 执行器
 
+通过优化器的优化终于进入了执行器执行我们的sql了
 
+在开始执行的时候要先判断你对这个表T有没有执行查询的条件，如果没有就会返回没有权限的错误。
 
+如果有权限，就打开表继续执行。打开表的时候执行器就会根据表的引擎定义去使用这个引擎提供的接口
 
 
 ## 自问自答
 1. 为什么所有跨存储引擎、内置函数要设计在Server层？
-答：存储Server层与存储引擎对接的方式是以接口方式对接的，每一种引擎去实现Server层的接口，这样用户将不关心因引擎不同导致sql的写法不同，也使存储引擎变成一种插件式，这样更好扩展。这样就比较好理解所有跨存储引擎功能要放在Server层了，因为不同的表存储引擎可能不同所以调用的规则可能不同，如果式放在Server就能很好的解决这个问题，直接调用存储引擎接口就可以；而内置函数也是放在Server层也是比较合理的，存储引擎主要是负责数据的存储和提取，而不是处理数据的，如果在Server层做处理就能忽略数据表是什么引擎，因为数据引擎返回统一的数格式，只要加一个函数处理功能就能对所有数据进行处理。
+    答：存储Server层与存储引擎对接的方式是以接口方式对接的，每一种引擎去实现Server层的接口，这样用户将不关心因引擎不同导致sql的写法不同，也使存储引擎变成一种插件式，这样更好扩展。这样就比较好理解所有跨存储引擎功能要放在Server层了，因为不同的表存储引擎可能不同所以调用的规则可能不同，如果式放在Server就能很好的解决这个问题，直接调用存储引擎接口就可以；而内置函数也是放在Server层也是比较合理的，存储引擎主要是负责数据的存储和提取，而不是处理数据的，如果在Server层做处理就能忽略数据表是什么引擎，因为数据引擎返回统一的数格式，只要加一个函数处理功能就能对所有数据进行处理。
+
 2. 如果user1第一次连接上数据库执行`select * from T`,管理员修改权限user1的权限不能访问T表，user1重连执行`select * from T` 会返回结果吗？
+
+     答：不会，因为在命中查询缓存，会在查询缓存返回结果的时候做权限验证
+
+3. 分析器执行了precheck权限验证和执行器执行了权限验证是否重复了？
+
+     答：不会，在sql执行过程中,可能会有触发器这种运行时才能确定是否有相应的权限操作，分析器工作结束后的precheck操作是不能对这种运行时涉及到表进行权限校验的，所以需要在执行器阶段进行权限检查。另外也是因为precheck这个步骤，才会报错显示用户无权限，而不是字段k不存在，这样做时防止暴露表结构
+
+4. 表结构放在哪里？
+
+     答：词法分析阶段时从information_schema中获取表结构的
+
+5. 如何设置长短连接？
+     答：长短连接不是设置的，而是“行为”，查完就断开就是短连接，查完不断开，下次继续查就是长连接
+
+     
