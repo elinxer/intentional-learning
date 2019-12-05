@@ -4,7 +4,7 @@
 
 > 我们的引擎默认是InnoDB引擎
 
-![](C:\Users\Administrator\Desktop\blog\mysql45-02-01.png)
+![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-02-01.png)
 
 > 建表语句：
 >
@@ -38,7 +38,7 @@ WAL（Writer-Ahead Logging）技术，这种技术是先写日志，再写磁盘
 
 在InnoDB中 redo log 是固定大小的，比如可以配置一组4个文件，每个文件大小是1GB，那么"缓存文件"就可以记录4GB的操作。redo log 是一个环形数据结构，从头开始写，写到末尾，又开始从头循环写，如下图
 
-![](C:\Users\Administrator\Desktop\blog\mysql45-02-02.png) 
+![]( https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-02-02.png) 
 
 write pos 是当前记录的位置，一边写一边后移（图中顺时针方向），写到3好文件的末尾就回到0号文件的开头。check point就是当前要擦除的位置，也是后推并且循环的，擦除的记录更新到数据文件中。
 
@@ -56,7 +56,7 @@ binlog是msyql Server层的日志文件，称之为binlog（归档日志）
 
 浅绿色表示实在InnoDB内部执行，深色表示在执行器中执行
 
-![操作](C:\Users\Administrator\Desktop\blog\mysql45-02-03.png)
+![操作](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-02-03.png)
 
 其中最后三步是比较绕的，将redo log 的写入拆成两个步骤：prepare和commit，这就是“两阶段提交”。
 
@@ -81,11 +81,53 @@ redo log 用于保证 crash-safe 能力。innodb_flush_log_at_trx_commit 这个�
 
  sync_binlog 这个参数设置成 1 的时候，表示每次事务的 binlog 都持久化到磁盘。这个参数我也建议你设置成 1，这样可以保证 MySQL 异常重启之后 binlog 不丢失。 
 
+```mysql
+# 查询innodb_flush_log_at_trx_commit的值
+mysql> show global variables like '%innodb_flush_log_at_trx_commit%';
+# 设置innodb_flush_log_at_trx_commit的值
+mysql> set global innodb_flush_log_at_trx_commit=1;
+```
 
+> 当**innodb_flush_log_at_trx_commit**的值为**0**
+>
+> log buffer将每一秒地写入到log file中，并且log file的flush到磁盘操作同时进行（每秒读，同步刷）
+>
+> 当**innodb_flush_log_at_trx_commit**的值为**1**（默认值）
+>
+> 每次事务提交时MySQL都会把log buffer的数据写入到log file，并且同步flush到磁盘中（每次提交，同步刷）
+>
+> 当**innodb_flush_log_at_trx_commit**的值为**2**
+>
+> 每次事务提交时MySQL都会把log buffer的数据写入到log file,但是MySQL会每秒执行一次flush（每次提交，每秒刷）
+>
+> 所以设置值为1时满足ACID的，当MySQL异常重启，0和2都有可能会出现一秒的输出错误，不满足ACID。
+
+```mysql
+# 查询sync_binlog配置
+mysql> show global variables like '%sync_binlog%'
+# 修改sync_binlog配置
+mysql> set global sync_binlog=2;
+```
+
+>当**sync_binlog**的值为**0**（默认值）
+>
+>表示MySQL不控制binlog的刷新，由文件系统自己控制它的缓存刷新。这时性能时最好的，但是存在风险，一旦系统crash,在binlog_cache中的binlog将会丢失。
+>
+>当**sync_binlog**的值为**>0**，假设该值为**n**
+>
+>表示n次事务提交后，MySQL调用文件系统刷新操作将缓存刷到磁盘中。其中最安全的是n=1的时候（*发生crash时有可能丢失一个binlog*），每次事务提交，就刷新binlog入磁盘，但是对IO负载较大。
 
 ## 自问自答
 
 1. **如何修改redo log的大小？**
+
+   答：
+
+   1. 执行`set global innodb_fast_shutdown=0 `,把所有脏数据写入磁盘；
+   2. 执行`mysqladmin shutdown`,关闭数据库；
+   3. 修改my.cnf文件innodb_log_file_size参数值；
+   4. 执行mv ib_logfile*bak命令，将redo log移到其他目录；(MySQL5.7之后可忽略)
+   5. 执行`mysql_safe --defaults-file=/etc/my.cnf --user=mysql &`，启动MySQL。
 
 2. **为什么有两份日志**
 
@@ -98,9 +140,9 @@ redo log 用于保证 crash-safe 能力。innodb_flush_log_at_trx_commit 这个�
    1. redo log 是InnoDB引擎特有的；binlog是MySQL的Server层实现，所有的引擎都可以使用
 
    2. redo log是物理日志，记录的是“在某个数据页做了什么修改”；binlog是逻辑日志，记录的是这个语句原始的逻辑
-   
+
    > 一 个a操作，初始值 x=0 第一步 x = x+1,第二步 x=x+2。物理日志会记录 操作a： x=0  => x=3；而逻辑日志会记录 操作a 初始值x=0，x=x+1；x=x+2；
-   
+
    3. redo log是循环写会，空间固定会用完；binlog 是可以追加写。
-   
+
       > 追加写是指binlog文件写到一定大小之后会切换到下一个，不会覆盖以前的日志

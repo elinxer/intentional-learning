@@ -12,7 +12,7 @@ mysql> select * from T where id = 10;
 
 
 
-![image text](https://github.com/dddygin/intentional-learning/blob/master/learingMysql/mysql45/picture/mysql45-01-01.gif?raw=true)
+![image text](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-01-01.gif)
 
 <div align=center style="color:#888888;">MySQL逻辑架构图</div>
 MySQL 可以分成Server层和存储引擎两大部分
@@ -42,7 +42,7 @@ mysql -h$ip -P$port -u$user -p
 
 连接完成后如果没有后续的动作连接就会处于空闲状态，可以使用`show processlist`命令查看连接，在Command列相似为"Sleep"的这一行表示当前连接空闲。
 
-![image text](https://github.com/dddygin/intentional-learning/blob/master/learingMysql/mysql45/picture/mysql45-01-02.gif?raw=true)
+![image text](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-01-02.gif)
 
 如果时间太长没有进行操作，连接器就会自动断开，这个时间的参数是由wait_timeout控制的，默认值是8小时
 
@@ -53,7 +53,7 @@ show global variables like 'wait_timeout';
 set global wait_timeout=14400;
 ```
 
-![image text](https://github.com/dddygin/intentional-learning/blob/master/learingMysql/mysql45/picture/mysql45-01-03.gif?raw=true)
+![image text](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-01-03.gif)
 
 如果连接被断开之后，客户端在发送请求就和收到一个 ”Lost connection to MySQL server during query"的错误，这时需要重连再执行请求。
 
