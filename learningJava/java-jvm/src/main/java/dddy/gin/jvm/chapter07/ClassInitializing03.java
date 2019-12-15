@@ -1,4 +1,4 @@
-package dddy.gin.deep_understanding_jvm.chapter07;
+package dddy.gin.jvm.chapter07;
 
 public class ClassInitializing03 {
     public static void main(String[] args) {

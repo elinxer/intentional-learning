@@ -11,6 +11,7 @@
     <modules>
         <module>java-base</module>
         <module>java-jvm</module>
+        <module>algorithm</module>
     </modules>
     <!-- openjdk-12 -->
     <properties>
