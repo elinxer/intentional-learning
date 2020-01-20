@@ -120,4 +120,5 @@ mysql> select * from tuser where name like '张%' and age=10 and ismale=1;
 
 1. 在生产中有一种情况是表数据10G而索引确高达30G为什么？怎么解决
 
-   答：这时由于  InnoDB 这种引擎导致的,虽然删除了表的部分记录,但是它的索引还在, 并未释放。解决方法是重建表或者用`alter table engine=InnoDB。
+   答：这时由于  InnoDB 这种引擎导致的,虽然删除了表的部分记录,但是它的索引还在, 并未释放。解决方法是重建表或者用`alter table T engine=InnoDB`。
+
