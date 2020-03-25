@@ -1,0 +1,49 @@
+### 运行 tutorials 的前提
+- 安装好 rabbitmq server
+
+    - docker 安装方式: `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management`
+
+- hello world 模型
+    - 组件:
+        - P:生产者
+        - C:消费者
+        - hello:队列
+
+    ![](https://www.rabbitmq.com/img/tutorials/python-one-overall.png)
+
+- work queue (队列)模型
+    - 组件:
+        - P:生产者
+        - Cn:消费者(n可以多个)
+        - task_queue:队列
+
+    ![](https://www.rabbitmq.com/img/tutorials/python-two.png)
+
+- publish subscribe 发布订阅模型
+    - 模式：fanout
+        - 组件：
+            - P:发布者
+            - Cn:订阅者(n可以多个)
+            - amq.gen-XXX:队列(多条)
+            - X: 交换机
+        
+        ![](https://www.rabbitmq.com/img/tutorials/python-three-overall.png)
+
+    - 模式：direct
+        - 组件：
+            - P: 发布者
+            - X：交换机
+            - Cn：订阅者(可以有多个)
+            - Qn: 队列(可以有多个)
+       
+        ![](https://www.rabbitmq.com/img/tutorials/direct-exchange.png)
+    
+    - 模式：topic
+        - 组件：
+            - P: 发布者
+            - X：交换机
+            - Cn：订阅者(可以有多个)
+            - Qn: 队列(可以有多个)
+            - */#：规则
+        
+        ![](https://www.rabbitmq.com/img/tutorials/python-five.png)

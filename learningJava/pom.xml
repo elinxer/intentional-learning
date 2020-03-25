@@ -12,6 +12,9 @@
         <module>java-base</module>
         <module>java-jvm</module>
         <module>algorithm</module>
+        <module>redis</module>
+        <module>java-thread</module>
+        <module>mq</module>
     </modules>
     <!-- openjdk-12 -->
     <properties>
@@ -31,12 +34,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.21</version>
+            <version>1.7.26</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.21</version>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.26</version>
         </dependency>
         <!--数据库-->
         <dependency>
@@ -44,6 +47,8 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.18</version>
         </dependency>
+
+
 
     </dependencies>
 
