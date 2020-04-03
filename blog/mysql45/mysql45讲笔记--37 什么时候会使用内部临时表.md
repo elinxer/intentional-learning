@@ -33,7 +33,7 @@ call idata();
 
 这条语句用到了 union，它的语义是，取这两个子查询结果的并集。并集的意思就是这两个集合加起来，重复的行只保留一行。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-37-01.png)
+![](../images/mysql45/picture/mysql45-37-01.png)
 
 <center>图 1 union 语句 explain 结果</center>
 
@@ -65,7 +65,7 @@ select id%10 as m, count(*) as c from t1 group by m;
 
 个语句的逻辑是把表 t1 里的数据，按照 id%10 进行分组统计，并按照 m 的结果排序后输出。它的 explain 结果如下：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-37-02.png)
+![](../images/mysql45/picture/mysql45-37-02.png)
 
 <center>图 2  group by 的 explain 结果 </center>
 
@@ -120,7 +120,7 @@ group by 的语义逻辑，是统计不同的值出现的个数。但是，由�
 
 如果可以确保输入的数据是有序的，那么计算 group by 的时候，就只需要从左到右，顺序扫描，依次累加。也就是下面这个过程：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-37-03.png)
+![](../images/mysql45/picture/mysql45-37-03.png)
 
 <center> 图3 group by 算法优化 - 有序输入 </center>
 

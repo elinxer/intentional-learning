@@ -17,7 +17,7 @@ insert into T values(100,1, 'aa'),(200,2,'bb'),(300,3,'cc'),(500,5,'ee'),(600,6,
 
 下图为InnoDB 的索引组织结构
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-05-01.png)
+![](../images/mysql45/picture/mysql45-05-01.png)
 
 那我们看一下执行select * from T where k between 3 and 5, 需要执行几次树的搜索，会扫描多少行？
 
@@ -67,7 +67,7 @@ CREATE TABLE `tuser` (
 
 为了更加直观说明最左前缀，我们举个例子：就用（name，age）这个联合索引分析。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-05-02.jpg)
+![](../images/mysql45/picture/mysql45-05-02.jpg)
 
 可以看到，索引项是按照索引定义里面出现的字段顺序排序的。
 
@@ -104,11 +104,11 @@ mysql> select * from tuser where name like '张%' and age=10 and ismale=1;
 
 下图是无索引下推流程图：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-05-03.jpg)
+![](../images/mysql45/picture/mysql45-05-03.jpg)
 
 下图是有索引下推执行流程图：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-05-04.jpg)
+![](../images/mysql45/picture/mysql45-05-04.jpg)
 
 其中,无索引下推流程图,在（name,age）索引里面特意去掉age的值，这个过程InnoDB并不回去看age的值，只是顺序的把name第一个字是张的记录一条条取出来回表，因此回表4次。
 

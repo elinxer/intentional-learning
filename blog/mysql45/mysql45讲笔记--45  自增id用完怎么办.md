@@ -93,7 +93,7 @@ Xid 和 InnoDB 的 trx_id 是两个容易混淆的概念。 **Xid 是由 server 
 
 > InnoDB 数据可见性的核心思想是：每一行数据都记录了更新它的 trx_id，当一个事务读到一行数据的时候，判断这个数据是否可见的方法，就是通过事务的一致性视图与这行数据的 trx_id 做对比。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-45-01.png)
+![](../images/mysql45/picture/mysql45-45-01.png)
 
 <center>图1 事务的 trx_id </center>
 session B 里，我从 innodb_trx 表里查出的这两个字段，第二个字段 trx_mysql_thread_id 就是线程 id。显示线程 id，是为了说明这两次查询看到的事务对应的线程 id 都是 5，也就是 session A 所在的线程。

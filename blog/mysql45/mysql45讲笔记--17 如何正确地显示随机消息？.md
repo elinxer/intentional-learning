@@ -36,7 +36,7 @@ mysql> select word from words order by rand() limit 3;
 
 我们先用 explain 命令来看看这个语句的执行情况。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-17-01.png)
+![](../images/mysql45/picture/mysql45-17-01.png)
 
 <center>图 1 使用 explain 命令查看语句的执行情况</center>
 Extra 字段显示 Using temporary ，表示的是需要使用临时表；Using filesort，表示的是需要执行排序操作。
@@ -57,7 +57,7 @@ Extra 字段显示 Using temporary ，表示的是需要使用临时表；Using 
 6. 在 sort_buffer 中根据 R 的值进行排序。注意，这个过程没有涉及到表操作，所以不会增加扫描行数。
 7. 排序完成后，取出前三个结果的位置信息，依次到内存临时表中取出 word 值，返回给客户端。这个过程中，访问了表的三行数据，总扫描行数变成了 20003。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-17-02.png)
+![](../images/mysql45/picture/mysql45-17-02.png)
 
 <center>图 2 随机排序完整流程图 1</center>
 图中的 pos 就是位置信息，你可能会觉得奇怪，这里的“位置信息”是个什么概念？在上一篇文章中，我们对 InnoDB 表排序的时候，明明用的还是 ID 字段
@@ -99,7 +99,7 @@ select word from words order by rand() limit 3;
 SELECT * FROM `information_schema`.`OPTIMIZER_TRACE`\G
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-17-03.png)
+![](../images/mysql45/picture/mysql45-17-03.png)
 
 <center>图 3 OPTIMIZER_TRACE 部分结果</center>
 因为将 max_length_for_sort_data 设置成 16，小于 word 字段的长度定义，所以我们看到 sort_mode 里面显示的是 rowid 排序，这个是符合预期的，参与排序的是随机值 R 字段和 rowid 字段组成的行。
@@ -118,7 +118,7 @@ SELECT * FROM `information_schema`.`OPTIMIZER_TRACE`\G
 2. 取下一行（R‘，rouwid’），跟当前堆里卖弄最大的R比较，如果R‘小于R，把这个（R，rowid）从堆中去掉，换成（R’，rowid‘）；
 3. 重复第二步骤，直到第10000个（R’，rowid‘）完成比较。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-17-04.png)
+![](../images/mysql45/picture/mysql45-17-04.png)
 
 <center>图 4 优先队列排序算法示例</center>
 图 4 是模拟 6 个 (R,rowid) 行，通过优先队列排序找到最小的三个 R 值的行的过程。整个排序过程中，为了最快地拿到当前堆的最大值，总是保持最大值在堆顶，因此这是一个最大堆。

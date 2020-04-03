@@ -6,7 +6,7 @@
 
 ### MySQL 主备的基本原理
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-24-01.png)
+![](../images/mysql45/picture/mysql45-24-01.png)
 
 <center>图 1 MySQL 主备切换流程</center>
 在状态1中，客户端写数据到节点A，生成A节点的binlog，A节点将数据推送给B节点（A节点的备库），这样就起到了A、B 节点数据一致了。<font color='orange'>虽然写的操作是在A节点(主库)，但是我们建议把B节点（备库）设置成Readonly，因为防止B节点误操作修改数据，和有时可通过readonly判断主备库。</font>
@@ -19,7 +19,7 @@
 
 节点 A 到 B 这条线的内部流程是什么样的，图 2 中画出的就是一个 update 语句在节点 A 执行，然后同步到节点 B 的完整流程图。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-24-02.png)
+![](../images/mysql45/picture/mysql45-24-02.png)
 
 <center>图 2 主备流程图</center>
 备库 B 跟主库 A 之间维持了一个长连接。主库 A 内部有一个线程，专门用于服务备库 B 的这个长连接。一个事务日志同步的完整过程是这样的： (重要！)
@@ -53,7 +53,7 @@
 
 我们可以认为正常情况下主备的数据是一致的。也就是说，图 1 中 A、B 两个节点的内容是一致的。其实，图 1 中我画的是 M-S 结构，但实际生产上使用比较多的是双 M 结构，也就是图 3 所示的主备切换流程
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-24-03.png)
+![](../images/mysql45/picture/mysql45-24-03.png)
 
 <center>图 3 MySQL 主备切换流程 -- 双 M 结构</center>
 对比图 9 和图 1，你可以发现，双 M 结构和 M-S 结构，其实区别只是多了一条线，即：节点 A 和 B 之间总是互为主备关系。这样在切换的时候就不用再修改主备关系。

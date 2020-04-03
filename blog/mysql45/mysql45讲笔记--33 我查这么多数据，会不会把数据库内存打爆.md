@@ -32,7 +32,7 @@ InnoDB 的数据是保存在主键索引上的，所以全表扫描实际上是�
 
 ####  服务器端的网络栈写满 “Sending to client”
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-33-01.png)
+![](../images/mysql45/picture/mysql45-33-01.png)
 
 <center>图 1 服务端发送阻塞</center>
 
@@ -59,11 +59,11 @@ InnoDB 的数据是保存在主键索引上的，所以全表扫描实际上是�
 
 也就是说，“Sending data”并不一定是指“正在发送数据”，而可能是处于执行器过程中的任意阶段。比如，你可以构造一个锁等待的场景，就能看到 Sending data 状态。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-33-02.png)
+![](../images/mysql45/picture/mysql45-33-02.png)
 
 <center>图 2 读全表被锁</center>
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-33-03.png)
+![](../images/mysql45/picture/mysql45-33-03.png)
 
 <center>图 3 Sending data 状态</center>
 
@@ -89,7 +89,7 @@ InnoDB 的数据是保存在主键索引上的，所以全表扫描实际上是�
 
 下图是一个 LRU 算法的基本模型。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-33-04.png)
+![](../images/mysql45/picture/mysql45-33-04.png)
 
 <center>图 4 基本 LRU 算法</center>
 
@@ -108,7 +108,7 @@ InnoDB 的数据是保存在主键索引上的，所以全表扫描实际上是�
 
 #### InnoDB 改进版 LRU 算法
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-33-05.png)
+![](../images/mysql45/picture/mysql45-33-05.png)
 
 <center>图 5 改进的 LRU 算法</center>
 

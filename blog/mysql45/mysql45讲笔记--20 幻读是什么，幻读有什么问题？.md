@@ -117,7 +117,7 @@ insert into t values(30,30,30)
 
 下面先来看一下这个场景（ 注意：<font color='orange'>这是我假设的一个场景</font> ）：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-20-01.png)
+![](../images/mysql45/picture/mysql45-20-01.png)
 
 <center>图 1 假设只在 id=5 这一行加行锁</center>
 可以看到，session A 里执行了三次查询，分别是Q1、Q2 和 Q3。它们的 SQL 语句相同，都是 select * from t where d=5 for update。这个语句的意思是，查所有 d=5 行，而且使用的是当前读，并且加上写锁，现在我们看一下这三条 SQL 语句，分别会返回什么结果。
@@ -145,7 +145,7 @@ insert into t values(30,30,30)
 
 如果现在这样看感觉还不明显的话，我再往 session B 和 session C 里面分别加一条 SQL 语句，你再看看会出现什么现象。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-20-02.png)
+![](../images/mysql45/picture/mysql45-20-02.png)
 
 <center>图 2 假设只在 id=5 这一行加行锁 -- 语义被破坏</center>
 session B 的第二条语句 update t set c=5 where id=0，语义是“我把 id=0、d=5 这一行的 c 值，改成了 5”。
@@ -160,7 +160,7 @@ session C 也是一样的道理，对 id=1 这一行的修改，也是破坏了 
 
 为了说明这个问题，session A 在 T1 时刻再加上一个更新语句，即 ：update  t set d=100 where d=5。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-20-03.png)
+![](../images/mysql45/picture/mysql45-20-03.png)
 
 <center>图 3 假设只在 id=5 这一行加行锁 -- 数据一致性问题</center>
 update 的加锁语义和 select …for update 是一致的，所以这时候加上这条 update 语句也很合理。session A 声明说“要给 d=5 的语句加上锁”，就是为了要更新数据，新加的这条 update 语句就是把它认为加上了锁的这一行的 d 值修改成了 100。
@@ -202,7 +202,7 @@ update t set d=100 where d=5;/*所有d=5的行，d改成100*/
 
 那怎么改呢？我们把扫描过程中碰到的行，也都加上写锁，再来看看执行效果。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-20-04.png)
+![](../images/mysql45/picture/mysql45-20-04.png)
 
 <center>图 4 假设扫描到的行都被加上了行锁</center>
 由于 session A 把所有的行都加了写锁，所以 session B 在执行第一个 update 语句的时候就被锁住了。需要等到 T6 时刻 session A 提交以后，session B 才能继续执行。
@@ -235,7 +235,7 @@ update t set c=5 where id=0; /*(0,5,5)*/
 
 顾名思义，间隙锁，锁的就是两个值之间的空隙。比如文章开头的表 t，初始化插入了 6 个记录，这就产生了 7 个间隙。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-20-05.png)
+![](../images/mysql45/picture/mysql45-20-05.png)
 
 <center>图 5 表 t 主键索引上的行锁和间隙锁</center>
 这样，当你执行 select * from t where d=5 for update 的时候，就不止是给数据库中已有的 6 个记录加上行锁，同时加上了 7个间隙锁。这样就确保了无法插入新的记录。
@@ -250,7 +250,7 @@ update t set c=5 where id=0; /*(0,5,5)*/
 
 这句话不太好理解，举个例子：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-20-06.png)
+![](../images/mysql45/picture/mysql45-20-06.png)
 
 <center>图 6 间隙锁之间不互锁</center>
 这里 session B 并不会别堵住。因为表 t 里面并没有 c=7 这记录，因此 session A 加的是（5，10）。而 session B 也是在这个间隙加的间隙锁。它们有共同目标，即保护这个间隙，不允许插入值。但，它们之间是不冲突的。
@@ -324,7 +324,7 @@ commit;
 
 这里，我用两个 session 来模拟并发，并假设 N=9。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-20-07.png)
+![](../images/mysql45/picture/mysql45-20-07.png)
 
 <center>图 7 间隙锁导致的死锁</center>
 你看到了，其实都不需要用到后面的 update 语句，就已经形成死锁了。我们按语句执行顺序来分析一下：

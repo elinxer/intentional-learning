@@ -24,7 +24,7 @@ max_connections 的计算，不是看谁在 running，是只要连着就占用�
 
 但是需要注意，在 show processlist 的结果里，踢掉显示为 sleep 的线程，可能是有损的。我们来看下面这个例子。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-22-01.png)
+![](../images/mysql45/picture/mysql45-22-01.png)
 
 <center> 图 1 sleep 线程的两种状态 </center>
 
@@ -32,11 +32,11 @@ max_connections 的计算，不是看谁在 running，是只要连着就占用�
 
 但是，怎么判断哪些是事务外空闲的呢？session C 在 T 时刻之后的 30 秒执行 show processlist，看到的结果是这样的。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-22-02.png)
+![](../images/mysql45/picture/mysql45-22-02.png)
 
 <center>图 2 sleep 线程的两种状态，show processlist 结果</center>
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-22-03.png)
+![](../images/mysql45/picture/mysql45-22-03.png)
 
 <center>图 3 从 information_schema.innodb_trx 查询事务状态</center>
 
@@ -96,7 +96,7 @@ call query_rewrite.flush_rewrite_rules();
 
 这里，call query_rewrite.flush_rewrite_rules() 这个存储过程，是让插入的新规则生效，也就是我们说的“查询重写”。你可以用图 4 中的方法来确认改写规则是否生效。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-22-04.png)
+![](../images/mysql45/picture/mysql45-22-04.png)
 
 <center>图 4 查询重写效果</center>
 

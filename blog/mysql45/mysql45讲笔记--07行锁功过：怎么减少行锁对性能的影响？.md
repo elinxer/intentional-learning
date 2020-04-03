@@ -10,7 +10,7 @@ MySQL的行锁是在引擎层由各个引擎自己实现的。但并不是所有
 
 举个例子，下面的操作顺序中，事务B的update语句执行时会是什么现象呢？假设字段id是t表的主键。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-07-01.jpg)
+![](../images/mysql45/picture/mysql45-07-01.jpg)
 
 经过实践可知：实际上事务B的update语句会被阻塞，直到事务A执行commit之后，事务B才能继续执行。实践操作可得出结论是事务A持有的两个记录的行锁，都是在commit的时候释放的。
 
@@ -42,7 +42,7 @@ MySQL的行锁是在引擎层由各个引擎自己实现的。但并不是所有
 
 我们用数据库中行锁说明死锁
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-07-02.jpg)
+![](../images/mysql45/picture/mysql45-07-02.jpg)
 
 可以从图中看出，事务A在等待事务B释放id为2的行锁，而此时事务B在等待事务A释放id为1的行锁。事务A和事务B在相互等待对方的资源释放，这就是进入死锁状态。
 

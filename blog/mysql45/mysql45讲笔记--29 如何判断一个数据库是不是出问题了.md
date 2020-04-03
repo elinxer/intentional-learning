@@ -27,7 +27,7 @@ CREATE TABLE `t` (
  insert into t values(1,1)
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-29-01.png)
+![](../images/mysql45/picture/mysql45-29-01.png)
 
 <center>图 1 查询 blocked</center>
 

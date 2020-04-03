@@ -6,7 +6,7 @@
 
 Java虚拟机在执行Java程序的过程中会把它所管理的内存划分成为若干个不同的数据区域。这些区域有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机的进程启动而一直存在，有些区域则是依赖用户的线程启动和结束而建立和销毁（*共享数据区和线程数据区*)。如下图时Java虚拟机运行时数据区域。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/jvm/blog_jvm_03.png)
+![](../../images/jvm/blog_jvm_03.png)
 
 JVM运行时数据区分为**程序计数器、Java虚拟机栈、本地方法栈、Java堆、方法区**五大部分。
 
@@ -30,7 +30,7 @@ JVM运行时数据区分为**程序计数器、Java虚拟机栈、本地方法�
 
 与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stack）[[注]](https://blog.csdn.net/yohohaha/article/details/89378915)也是**线程私有的，它的生命周期与线程相同**。虚拟机栈描述的是Java方法执行的线程内存模型：**每个方法被执行的时候，Java虚拟机都会同步创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态连接、方法出口等信息**。每一个方法被调用直至执行完毕的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/jvm/blog_jvm_04.png)
+![](../../images/jvm/blog_jvm_04.png)
 
 这些数据类型在局部变量表中的存储空间以局部变量槽（Slot）来表示，其中64位长度的long和double类型的数据会占用两个变量槽，其余的数据类型只占用一个。局部变量表所需的内存空间在编译期间完成分配，当进入一个方法时，这个方法需要在栈帧中分配多大的局部变量空间是完全确定的，在方法运行期间不会改变局部变量表的大小。请读者注意，这里说的“大小”是指变量槽的数量，虚拟机真正使用多大的内存空间（譬如按照1个变量槽占用32个比特、64个比特，或者更多）来实现一个变量槽，这是完全由具体的虚拟机实现自行决定的事情。
 
@@ -60,7 +60,7 @@ JVM运行时数据区分为**程序计数器、Java虚拟机栈、本地方法�
 
 **方法区（Method Area）与Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据**。虽然《Java虚拟机规范》中把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫作“非堆”（Non-Heap），目的是与Java堆区分开来。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/jvm/blog_jvm_05.png)
+![](../../images/jvm/blog_jvm_05.png)
 
 #### 永久代
 

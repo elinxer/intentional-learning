@@ -10,7 +10,7 @@
 
 之后，MySQL 引入了备库并行复制能力，如图 1，将单线程 sql_thread 拆分成 多个 worker 执行。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-26-01.png)
+![](../images/mysql45/picture/mysql45-26-01.png)
 
 <center>图 1 多线程模型</center>
 

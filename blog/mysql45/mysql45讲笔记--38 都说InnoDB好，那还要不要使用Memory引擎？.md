@@ -9,7 +9,7 @@ insert into t values(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(0,0);
 
 以下是 t 表的结构图：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-38-01.png)
+![](../images/mysql45/picture/mysql45-38-01.png)
 
 <center>图 1 内存表 t 结构图</center>
 
@@ -38,7 +38,7 @@ insert into t values(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(0,0);
 alter table t add index a_btree_index using btree (id)
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-38-02.png)
+![](../images/mysql45/picture/mysql45-38-02.png)
 
 <center>图 2 表t的数据表组织 -- 增加 B-Tree 索引</center>
 

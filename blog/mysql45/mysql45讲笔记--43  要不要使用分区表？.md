@@ -18,7 +18,7 @@ PARTITION p_others VALUES LESS THAN MAXVALUE ENGINE = InnoDB);
 insert into t values('2017-4-1',1),('2018-4-1',1);
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-43-01.png)
+![](../images/mysql45/picture/mysql45-43-01.png)
 
 <center> 图 1 表 t 的磁盘文件 </center>
 > 可以通过 `find / -name "*.ibd"` 找到 msyql 存储文件的位置。
@@ -32,7 +32,7 @@ insert into t values('2017-4-1',1),('2018-4-1',1);
 
 **证明对于InnoDB 来说是 4 个表（InnoDB）**
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-43-02.png)
+![](../images/mysql45/picture/mysql45-43-02.png)
 
 <center> 图 2 分区表间隙锁示例 </center>
 从图2可知到，如果对于 InnoDB 来说是一个表，那么 session A 会在 2017-4-1 到 2018-4-1 加一个间隙锁（利用优化2）。但 session B 中 2018-2-1 能插入，而 2017-12-1 却被锁住。
@@ -43,7 +43,7 @@ insert into t values('2017-4-1',1),('2018-4-1',1);
 
 首先用 alter table t engine=myisam，把表 t 改成 MyISAM 表；然后，我再用下面这个例子说明，对于 MyISAM 引擎来说，这是 4 个表。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-43-03.png)
+![](../images/mysql45/picture/mysql45-43-03.png)
 
 <center> 图 3 用 MyISAM 表锁验证 </center>
 在 session A 里面，用 sleep(100) 将这条语句的执行时间设置为 100 秒。由于 MyISAM 引擎只支持表锁，所以这条 update 语句会锁住整个表 t 上的读。
@@ -69,7 +69,7 @@ insert into t values('2017-4-1',1),('2018-4-1',1);
 
 下图就是创建的一个包含了很多分区的表 t_myisam，执行一条插入语句后报错的情况。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-43-04.png)
+![](../images/mysql45/picture/mysql45-43-04.png)
 
 <center> 图 4 insert 语句报错 </center>
 可以看到，这条 insert 语句，明显只需要访问一个分区，但语句却无法执行。 
@@ -86,10 +86,10 @@ insert into t values('2017-4-1',1),('2018-4-1',1);
 
 如果从 server 层看的话，一个分区表就只是一个表。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-43-05.png)
+![](../images/mysql45/picture/mysql45-43-05.png)
 
 <center>图 5 分区表的 MDL 锁</center>
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-43-06.png)
+![](../images/mysql45/picture/mysql45-43-06.png)
 
 <center> 图 6 show processlist 结果 </center>
 

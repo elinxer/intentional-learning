@@ -22,7 +22,7 @@
 
 接下来，我们用一个示意图来展示一下“孔乙己赊账”的整个操作过程。假设原来孔乙己欠账 10 文，这次又要赊 9 文。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-12-01.jpeg)
+![](../images/mysql45/picture/mysql45-12-01.jpeg)
 
 <center>图 1 “孔乙己赊账”更新和 flush 过程</center>
 ### 原因
@@ -35,7 +35,7 @@
 
   这个场景，**对应的就是 InnoDB 的 redo log 写满了**。这时候系统会停止所有更新操作，把 checkpoint 往前推进，redo log 留出空间可以继续写。我在第二讲画了一个 redo log 的示意图，这里我改成环形，便于大家理解。 
 
-  ![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-12-02.jpg)
+  ![](../images/mysql45/picture/mysql45-12-02.jpg)
 
   <center>图 2 redo log 状态图</center>
 checkpiont 可不是随便往前修改一下位置就可以的。比如图2中，把checkpoint位置从 CP 推到 CP‘ ，就需要将两点之间的日志（浅绿色部分），对应的所有脏页都flush 到磁盘上，之后，图中从 write pos 到 CP‘ 之间就是可以再写入的 redo log 的区域。
@@ -123,7 +123,7 @@ F1(M)
 
 然后，**根据上述算得的 F1(M) 和 F2(N) 两个值，取其中较大的值记为 R，之后引擎就可以按照 innodb_io_capacity 定义的能力乘以 R% 来控制刷脏页的速度。**
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-12-03.jpg)
+![](../images/mysql45/picture/mysql45-12-03.jpg)
 
 <center> 图 3 InnoDB 刷脏页速度策略 </center>
 现在你知道了，InnoDB 会在后台刷脏页，而刷脏页的过程是要将内存页写入磁盘。所以，无论是你的查询语句在需要内存的时候可能要求淘汰一个脏页，还是由于刷脏页的逻辑会占用 IO 资源并可能影响到了你的更新语句，都可能是造成你从业务端感知到 MySQL“抖”了一下的原因。 

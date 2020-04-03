@@ -4,7 +4,7 @@
 
 - 客户端直连数据库（结构详情如图 1）
 
-  ![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-28-01.png)
+  ![](../images/mysql45/picture/mysql45-28-01.png)
 
   <center>图 1 直连读写分离结构</center>
   - 如何实现：
@@ -24,7 +24,7 @@
 
 - 客户端通过 proxy 连接数据库
 
-  ![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-28-02.png)
+  ![](../images/mysql45/picture/mysql45-28-02.png)
 
   <center>图 2 带 proxy 的读写分离架构</center>
   - 实现方式：

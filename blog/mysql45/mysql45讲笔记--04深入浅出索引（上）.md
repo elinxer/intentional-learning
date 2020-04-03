@@ -35,7 +35,7 @@ mysql> create table T(
 
 表中R1~R5的（ID，k）值分别为（100，1）、（200，2），（300，3）、（500，5）、（600，6）如下表
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-04-01.png)
+![](../images/mysql45/picture/mysql45-04-01.png)
 
 
 

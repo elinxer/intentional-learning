@@ -3,14 +3,9 @@ package dddy.gin.rocketmq.example.simple;
 import dddy.gin.rocketmq.example.RKConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListener;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.common.message.MessageExt;
-
-import java.util.List;
 
 /**
  * Consume Messages
@@ -20,7 +15,14 @@ import java.util.List;
 @Slf4j
 public class Consumer {
     public static void main(String[] args) throws MQClientException {
-        //Instantiate with specified consumer group name.
+
+        /*
+         * Instantiate with specified consumer group name.
+         * GROUP_NAME 的值必须是唯一而且要与 生产者的 GROUP_NAME 对应的上，方可
+         * SyncProducer ->  SIMPLE_GROUP_NAME_SYNC
+         * AsyncProducer->  SIMPLE_GROUP_NAME_ASYNC
+         *
+         */
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RKConfig.SIMPLE_GROUP_NAME);
 
         //Specify name server address

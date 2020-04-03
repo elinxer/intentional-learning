@@ -26,7 +26,7 @@ select * from a left join b on(a.f1=b.f1) where (a.f2=b.f2);/*Q2*/
 
 我把这两条语句分别记为 Q1 和 Q2。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-44-01.png)
+![](../images/mysql45/picture/mysql45-44-01.png)
 
 <center> 图 1 两个 join 的查询结果 </center>
 可以看到：
@@ -38,7 +38,7 @@ select * from a left join b on(a.f1=b.f1) where (a.f2=b.f2);/*Q2*/
 
 我们先一起看看语句 Q1 的 explain 结果： 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-44-02.png)
+![](../images/mysql45/picture/mysql45-44-02.png)
 
 <center> 图 2 Q1 的 explain 结果 </center>
 可以看到，这个结果符合我们的预期： 
@@ -54,7 +54,7 @@ select * from a left join b on(a.f1=b.f1) where (a.f2=b.f2);/*Q2*/
 
 语句 Q2 的查询结果里面少了最后两行数据，是不是就是把上面流程中的步骤 3 去掉呢？我们还是先看一下语句 Q2 的 expain 结果吧。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-44-03.png)
+![](../images/mysql45/picture/mysql45-44-03.png)
 
 <center> 图 3 Q2 的 explain 结果 </center>
 
@@ -72,7 +72,7 @@ select * from a left join b on(a.f1=b.f1) where (a.f2=b.f2);/*Q2*/
 
 因此，优化器就把这条语句的 left join 改写成了 join，然后因为表 a 的 f1 上有索引，就把表 b 作为驱动表，这样就可以用上 NLJ 算法。在执行 explain 之后，你再执行 show warnings，就能看到这个改写的结果，如图 4 所示。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-44-04.png)
+![](../images/mysql45/picture/mysql45-44-04.png)
 
 <center> 图 4 Q2 的改写结果 </center>
 
@@ -146,7 +146,7 @@ create table t(id int auto_increment primary key);
 insert into t values(null);
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-44-05.png)
+![](../images/mysql45/picture/mysql45-44-05.png)
 
 <center> 图 6 insert 语句的 binlog </center>
 

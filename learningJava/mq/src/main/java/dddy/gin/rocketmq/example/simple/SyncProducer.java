@@ -36,6 +36,6 @@ public class SyncProducer {
             log.info("Send Result:{}", sendResult);
         }
         //Shut down once the producer instance is not longer in use.
-        producer.shutdown();
+//        producer.shutdown();
     }
 }

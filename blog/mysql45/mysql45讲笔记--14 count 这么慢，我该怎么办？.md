@@ -29,7 +29,7 @@
 
  我们假设从上到下是按照时间顺序执行的，同一行语句是在同一时刻执行的。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-14-01.png)
+![](../images/mysql45/picture/mysql45-14-01.png)
 
 <center> 图 1 会话 A、B、C 的执行流程 </center>
 你会看到，在最后一个时刻，三个会话 A、B、C 会同时查询表 t 的总行数，但拿到的结果却不同。 
@@ -81,7 +81,7 @@ Redis 的数据不能永久地留在内存里，所以你会找一个地方把�
 
 我们一起来看看这个时序图。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-14-02.png)
+![](../images/mysql45/picture/mysql45-14-02.png)
 
 <center> 图 2 会话 A、B 执行时序图 </center>
 图 2 中，会话 A 是一个插入交易记录的逻辑，往数据表里插入一行 R，然后 Redis 计数加 1；会话 B 就是查询页面显示时需要的数据。 
@@ -90,7 +90,7 @@ Redis 的数据不能永久地留在内存里，所以你会找一个地方把�
 
 你一定会说，这是因为我们执行新增记录逻辑时候，是先写数据表，再改 Redis 计数。而读的时候是先读 Redis，再读数据表，这个顺序是相反的。那么，如果保持顺序一样的话，是不是就没问题了？我们现在把会话 A 的更新顺序换一下，再看看执行结果。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-14-03.png)
+![](../images/mysql45/picture/mysql45-14-03.png)
 
 <center> 图 3 调整顺序后，会话 A、B 的执行时序图 </center>
 你会发现，这时候反过来了，会话 B 在 T3 时刻查询的时候，Redis 计数加了 1 了，但还查不到新插入的 R 这一行，也是数据不一致的情况。 
@@ -113,7 +113,7 @@ Redis 的数据不能永久地留在内存里，所以你会找一个地方把�
 
 所谓以子之矛攻子之盾，现在我们就利用“事务”这个特性，把问题解决掉。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-14-04.png)
+![](../images/mysql45/picture/mysql45-14-04.png)
 
 <center>图 4 会话 A、B 的执行时序图</center>
 我们来看下现在的执行结果。虽然会话 B 的读操作仍然是在 T3 执行的，但是因为这时候更新事务还没有提交，所以计数值加 1 这个操作对会话 B 还不可见。

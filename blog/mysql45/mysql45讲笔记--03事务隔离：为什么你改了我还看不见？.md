@@ -18,7 +18,7 @@ mysql> create table T(c int) engine=InnoDB;
 insert into T(c) values(1);
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-03-01.png)
+![](../images/mysql45/picture/mysql45-03-01.png)
 
 我们看一下在不同地隔离级别下，事务A会有那些不同地返回结果，即V1、V2 、V3的值是什么。
 
@@ -61,7 +61,7 @@ mysql> show variables like 'transaction_isolation';
 
 假设一个值从1按照顺序改成了2、3、4，在回滚日志就会有以下类似的记录。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-03-02.png)
+![](../images/mysql45/picture/mysql45-03-02.png)
 
 当前值是4，但是在查询这条记录的时候，不同时刻的事务会有不同的read-view。如图看到的，在视图A、B、C里面，这一个记录分别为1、2、4，同一条记录可以存在多个版本，这就是数据库的多版本并发控制(MVCC)。对于read-viewA要得到1，就必须将当前的值**执行途中所有**的回滚所得。
 

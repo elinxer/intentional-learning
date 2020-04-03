@@ -32,7 +32,7 @@ insert into t values(0,0,0),(5,5,5),
 
 第一个例子是关于等值条件操作间隙：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-01.png)
+![](../images/mysql45/picture/mysql45-21-01.png)
 
 <center>图 1 等值查询的间隙锁</center>
 由于表 t 中没有 id=7 的记录，所以用我们上面提到的加锁规则判断一下的话：
@@ -46,7 +46,7 @@ insert into t values(0,0,0),(5,5,5),
 
 第二个例子是关于覆盖索引上的锁：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-02.png)
+![](../images/mysql45/picture/mysql45-21-02.png)
 
 <center>图 2 只加在非唯一索引上的锁</center>
 看到这个例子，真的有一种“该锁的不锁，不该锁的乱锁”的感觉？ 我们来分析一下吧。 
@@ -77,7 +77,7 @@ mysql> select * from t where id>=10 and id<11 for update;
 
 在逻辑三，这两条语句肯定是等价的，但是他们的加锁规则不太一样。现在我们就让 session A 执行第二个查询语句，来看看加锁效果。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-03.png)
+![](../images/mysql45/picture/mysql45-21-03.png)
 
 <center> 图 3 主键索引上范围查询的锁 </center>
 现在我们就用前面提到的加锁规则，来分析一下 session A 会加什么锁呢？
@@ -95,7 +95,7 @@ mysql> select * from t where id>=10 and id<11 for update;
 
 需要注意的是，与案例三不同的是，案例四中查询语句的 where 部分用的是字段 c。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-04.png)
+![](../images/mysql45/picture/mysql45-21-04.png)
 
 <center> 图 4 非唯一索引范围锁 </center>
 这次 session A 用字段 c 来判断，加锁规则跟案例三唯一的不同是：在第一次用 c=10 定位记录的时候，索引 c 上加了 (5,10]这个 next-key lock 后，由于索引 c 是非唯一索引，没有优化规则，也就是说不会蜕变为行锁，因此最终 sesion A 加的锁是，索引 c 上的 (5,10] 和 (10,15] 这两个 next-key lock。
@@ -108,7 +108,7 @@ mysql> select * from t where id>=10 and id<11 for update;
 
 前面的四个案例，我们已经用到了加锁规则中的两个原则和两个优化，接下来再看一个关于加锁规则中 bug 的案例。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-05.png)
+![](../images/mysql45/picture/mysql45-21-05.png)
 
 <center>图 5 唯一索引范围锁的 bug</center>
 session A 是一个范围查询，按照原则 1 的话，应该是索引 id 上只加 (10,15]这个 next-key lock，并且因为 id 是唯一键，所以循环判断到 id=15 这一行就应该停止了。
@@ -129,7 +129,7 @@ mysql> insert into t values(30,10,30);
 
 新插入的这一行 c=10，也就是说现在表里有两个 c=10 的行。那么，这时候索引 c 上的间隙是什么状态了呢？你要知道，由于非唯一索引上包含主键的值，所以是不可能存在“相同”的两行的。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-06.png)
+![](../images/mysql45/picture/mysql45-21-06.png)
 
 <center> 图 6 非唯一索引等值的例子 </center>
 可以看到，虽然有两个 c=10，但是它们的主键值 id 是不同的（分别是 10 和 30），因此这两个 c=10 的记录之间，也是有间隙的
@@ -140,7 +140,7 @@ mysql> insert into t values(30,10,30);
 
 这次我们用 delete 语句来验证。注意，delete 语句加锁的逻辑，其实跟 select ... for update 是类似的，也就是我在文章开始总结的两个“原则”、两个“优化”和一个“bug”。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-07.png)
+![](../images/mysql45/picture/mysql45-21-07.png)
 
 <center>图 7 delete 示例</center>
 这时，session A 在遍历的时候，先访问第一个 c=10 的记录。同样地，根据原则 1，这里加的是 (c=5,id=5) 到 (c=10,id=10) 这个 next-key lock。
@@ -149,7 +149,7 @@ mysql> insert into t values(30,10,30);
 
 也就是说，这个 delete 语句在索引 c 上的加锁范围，就是下图中蓝色区域覆盖的部分。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-08.png)
+![](../images/mysql45/picture/mysql45-21-08.png)
 
 <center>图 8 delete 加锁效果示例</center>
 这个蓝色区域左右两边都是虚线，表示开区间，即 (c=5,id=5) 和 (c=15,id=15) 这两行上都没有锁。
@@ -158,7 +158,7 @@ mysql> insert into t values(30,10,30);
 
 例子 6 也有一个对照案例，场景如下所示：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-09.png)
+![](../images/mysql45/picture/mysql45-21-09.png)
 
 <center>图 9 limit 语句加锁</center>
 这个例子里，session A 的 delete 语句加了 limit 2。你知道表 t 里 c=10 的记录其实只有两条，因此加不加 limit 2，删除的效果都是一样的，但是加锁的效果却不同。可以看到，session B 的 insert 语句执行通过了，跟案例六的结果不同。
@@ -167,7 +167,7 @@ mysql> insert into t values(30,10,30);
 
 因此，索引 c 上的加锁范围就变成了从（c=5,id=5) 到（c=10,id=30) 这个前开后闭区间，如下图所示：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-10.png)
+![](../images/mysql45/picture/mysql45-21-10.png)
 
 <center> 图 10 带 limit 2 的加锁效果 </center>
 可以看到，(c=10,id=30）之后的这个间隙并没有在加锁范围里，因此 insert 语句插入 c=12 是可以执行成功的。
@@ -178,7 +178,7 @@ mysql> insert into t values(30,10,30);
 
 前面的例子中，我们在分析的时候，是按照 next-key lock 的逻辑来分析的，因为这样分析比较方便。最后我们再看一个案例，目的是说明：next-key lock 实际上是间隙锁和行锁加起来的结果。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-21-11.png)
+![](../images/mysql45/picture/mysql45-21-11.png)
 
 <center> 图 11 案例八的操作序列 </center>
 现在，我们按时间顺序来分析一下为什么是这样的结果。 
@@ -228,7 +228,7 @@ select id from t where c in(5,20,10) lock in share mode;
 
 ## 案例十一： delete 导致间隙变化 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-30-01.png)
+![](../images/mysql45/picture/mysql45-30-01.png)
 
 <center> 图 12 delete 导致间隙变化 </center>
 
@@ -242,7 +242,7 @@ select id from t where c in(5,20,10) lock in share mode;
 
  我们再来看一个 update 语句的案例 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-30-02.png)
+![](../images/mysql45/picture/mysql45-30-02.png)
 
 <center>图13 update 导致间隙变化 </center>
 
@@ -255,7 +255,7 @@ select id from t where c in(5,20,10) lock in share mode;
 
 索引 c 上 (5,10) 间隙是由这个间隙右边的记录，也就是 c=10 定义的。所以通过这个操作，session A 的加锁范围变成了图 7 所示的样子：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-30-03.png)
+![](../images/mysql45/picture/mysql45-30-03.png)
 
 <center> 图 14 session B 修改后， session A 的加锁范围 </center>
 

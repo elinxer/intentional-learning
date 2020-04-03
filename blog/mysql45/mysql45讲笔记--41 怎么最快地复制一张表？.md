@@ -56,7 +56,7 @@ mysqldump -h$host -P$port -u$user --add-locks=0 --no-create-info --single-transa
 
 通过这条 mysqldump 命令生成的 t.sql 文件中就包含了如图 1 所示的 INSERT 语句。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-41-01.png)
+![](../images/mysql45/picture/mysql45-41-01.png)
 
 <center> 图 1 mysqldump 输出文件的部分结果 </center>
 

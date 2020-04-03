@@ -12,7 +12,7 @@ select name from CUser where id_card = 'xxxxxxxyyyyyyzzzzz';
 
 简单起见，我们还用第4章的例子来说明，假设字段k上的值都不重复（k 值假设是id_card 字段）。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-05-01.png)
+![](../images/mysql45/picture/mysql45-05-01.png)
 
 <center>图1 InnoDB的索引组织结构</center>
 我们来分析一下这两种索引在查询和更新的性能影响。
@@ -102,7 +102,7 @@ mysql> insert into t(id,k) values(id1,k1),(id2,k2);
 
 这里，我们假设当前 k 索引树的状态，查找到位置后，k1 所在的数据页在内存（InnoDB buffer pool）中。k2 所在的数据页不在内存中。如图2所示是带 change buffer 的更新状态图。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-09-02.png)
+![](../images/mysql45/picture/mysql45-09-02.png)
 
 <center>图2 带 change buffer的更新过程</center>
 分析这条更新语句，你会发现它涉及了四个部分：内存、redo log（ib_log_fileX）、数据表空间（t.ibd）、系统表空间（ibdata1）。
@@ -121,7 +121,7 @@ mysql> insert into t(id,k) values(id1,k1),(id2,k2);
 
 如果读语句发生在更新语句后不久，内存中的数据都还在，那么此时的这两个读操作就与系统表空间（ibdata1）和 redo log（ib_log_fileX）无关了。所以，在图中就没与画出这两部分。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-09-03.png)
+![](../images/mysql45/picture/mysql45-09-03.png)
 
 <center> 图3 带change buffer的读过程</center>
 从图中可以看到：

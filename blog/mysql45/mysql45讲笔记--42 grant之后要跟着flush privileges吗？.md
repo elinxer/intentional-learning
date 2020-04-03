@@ -21,7 +21,7 @@ create user 'ua'@'%' identified by 'pa';
 
  图 1 就是这个时刻用户 ua 在 user 表中的状态。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-42-01.png)
+![](../images/mysql45/picture/mysql45-42-01.png)
 
 <center> 图 1 mysql.user 数据行 </center>
 ### 全局权限
@@ -77,7 +77,7 @@ grant all privileges on db1.* to 'ua'@'%' with grant option;
 
  图 2 就是这个时刻用户 ua 在 db 表中的状态。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-42-02.png)
+![](../images/mysql45/picture/mysql45-42-02.png)
 
 <center> 图 2 mysql.db 数据行 </center>
 
@@ -87,7 +87,7 @@ grant all privileges on db1.* to 'ua'@'%' with grant option;
 
 grant 操作对于已经存在的连接的影响，在全局权限和基于 db 的权限效果是不同的。接下来，我们做一个对照试验来分别看一下。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-42-03.png)
+![](../images/mysql45/picture/mysql45-42-03.png)
 
 <center> 图 3 权限操作效果 </center>
 
@@ -138,7 +138,7 @@ flush privileges 命令会清空 acl_users 数组，然后从 mysql.user 表中�
 
 **场景一**
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-42-04.png)
+![](../images/mysql45/picture/mysql45-42-04.png)
 
 <center> 图 4 使用 flush privileges </center>
 
@@ -150,7 +150,7 @@ flush privileges 命令会清空 acl_users 数组，然后从 mysql.user 表中�
 
 直接操作系统表是不规范的操作 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-42-05.png)
+![](../images/mysql45/picture/mysql45-42-05.png)
 
 <center> 图 5 不规范权限操作导致的异常 </center>
 

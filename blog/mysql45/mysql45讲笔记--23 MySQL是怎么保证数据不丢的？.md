@@ -16,7 +16,7 @@
 
 事务提交的时候，执行器把 binlog cache 里面的完整事务写入到 binlog 中，并清空 binlog cache。如图 1 ：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-23-01.png)
+![](../images/mysql45/picture/mysql45-23-01.png)
 
 <center>图 1 binlog 写盘状态</center>
 
@@ -53,7 +53,7 @@ redo log buffer 就是一块内存，用来先存 redo 日志的，即存储事�
 
 我们来看一下，redo log 可能存在的三种状态，如图2：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-23-02.png)
+![](../images/mysql45/picture/mysql45-23-02.png)
 
 <center>图 2 MySQL redo log 存储状态</center>
 
@@ -98,7 +98,7 @@ redo log buffer 就是一块内存，用来先存 redo 日志的，即存储事�
 
 如图 3 所示，是三个并发事务 (trx1, trx2, trx3) 在 prepare 阶段，都写完 redo log buffer，持久化到磁盘的过程，对应的 LSN 分别是 50、120 和 160。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-23-03.png)
+![](../images/mysql45/picture/mysql45-23-03.png)
 
 <center>图 3 redo log 组提交</center>
 
@@ -115,7 +115,7 @@ redo log buffer 就是一块内存，用来先存 redo 日志的，即存储事�
 
 为了让一次 fsync 带的组员更多，MySQL 有一个很有趣的优化：拖时间。在介绍两阶段提交的时候，有一个图，现在我把它截过来。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-23-04.png)
+![](../images/mysql45/picture/mysql45-23-04.png)
 
 <center>图 4 两阶段提交</center>
 
@@ -126,7 +126,7 @@ redo log buffer 就是一块内存，用来先存 redo 日志的，即存储事�
 
 MySQL 为了让组提交的效果更好，把 redo log 做 fsync 的时间拖到了步骤 1 之后。也就是说，上面的图变成了这样：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-23-05.png)
+![](../images/mysql45/picture/mysql45-23-05.png)
 
 <center>图 5 两阶段提交细化</center>
 

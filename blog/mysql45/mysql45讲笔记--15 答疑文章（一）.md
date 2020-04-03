@@ -2,7 +2,7 @@
 
 ## 日志相关问题 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-15-01.jpg)
+![](../images/mysql45/picture/mysql45-15-01.jpg)
 
 <center>图 1 两阶段提交示意图</center>
 我们分析一下**在两阶段提价的不同时刻，MySQL 异常重启会出现什么现象？。**

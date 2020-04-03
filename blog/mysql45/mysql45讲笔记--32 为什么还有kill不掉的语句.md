@@ -15,7 +15,7 @@ kill query 并不是马上停止的意思，而是告诉线程说，这条语句
 
 **kill query  的流程**
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-32-01.png)
+![](../images/mysql45/picture/mysql45-32-01.png)
 
 <center>图 1 kill query 成功的例子</center>
 实现上，当用户执行 kill query thread_id_B 时，MySQL 里处理 kill 命令的线程做了两件事： 
@@ -39,7 +39,7 @@ kill query 并不是马上停止的意思，而是告诉线程说，这条语句
 
 首先，执行 set global innodb_thread_concurrency=2，将 InnoDB 的并发线程上限数设置为 2；然后，执行下面的序列：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-32-02.png)
+![](../images/mysql45/picture/mysql45-32-02.png)
 
 <center> 图 2 kill query 无效的例子 </center>
  可以看到： 
@@ -49,7 +49,7 @@ kill query 并不是马上停止的意思，而是告诉线程说，这条语句
 3.  直到 session E 执行了 kill connection 命令，才断开了 session C 的连接，提示“Lost connection to MySQL server during query”;（只是断开了 session C 连接）
 4.  但是这时候，如果在 session E 中执行 show processlist，你就能看到下面这个图。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-32-03.png)
+![](../images/mysql45/picture/mysql45-32-03.png)
 
 <center> 图 3 kill connection 之后的效果 </center>
 这时候，id=12 这个线程的 Commnad 列显示的是 Killed。也就是说，客户端虽然断开了连接，但实际上服务端上这条语句还在执行过程中。

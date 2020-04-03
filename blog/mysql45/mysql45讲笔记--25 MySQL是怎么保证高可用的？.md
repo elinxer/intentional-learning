@@ -47,7 +47,7 @@
 
 **可靠性优先策略**
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-25-01.png)
+![](../images/mysql45/picture/mysql45-25-01.png)
 
 <center>图 2 MySQL 可靠性优先主备切换流程</center>
 

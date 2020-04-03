@@ -23,7 +23,7 @@
 
 下面我们看一下 InnoDB 中一个索引的示意图 。InnoDB 里面的数据都是用 B+ 数的结构组织的。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-13-01.jpg)
+![](../images/mysql45/picture/mysql45-13-01.jpg)
 
 <center> 图 1 B+ 树索引示意图 </center>
 假如，**我们要删掉 R4 这个记录**，InnoDB 引擎只会把 R4 这个记录标记为删除。如果之后要再插入一个 ID 再 300 和 600 之间的记录时，可能会复用这个位置。但是，磁盘文件的大小并不会缩小。
@@ -50,7 +50,7 @@
 
 假设图 1 中的 page A 已经满了，这时我要再插入一行数据会怎么样呢？
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-13-02.jpg)
+![](../images/mysql45/picture/mysql45-13-02.jpg)
 
 <center> 图 2 插入数据导致页分裂 </center>
 可以看到，由于 page A 满了，再插入一个 ID 是 550 的数据时，就不得不再申请一个新页面 page B 来保存数据了。页面分裂后，page A 的末尾就留下了空洞 （注意：实际上，可能不止 1 个记录的位置是空洞）。 
@@ -73,7 +73,7 @@
 
   在 MySQL 5.5 版本之前，这个命令的执行流程跟我们前面描述的差不多，区别只是这个临时表 B 不需要你自己创建，MySQL 会自动完成转存数据、交换表名、删除旧表的操作。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-13-03.jpg)
+![](../images/mysql45/picture/mysql45-13-03.jpg)
 
 <center>图 3 改锁表 DDL</center>
 显然，花时间最多的步骤是往临时表插入数据的过程，如果在这个过程中，有新的数据要写入到表 A 的话，就会造成数据丢失。因此，在整个 DDL 过程中，表 A 中不能有更新。也就是说，这个 DDL 不是 Online 的。
@@ -90,7 +90,7 @@
 4. 临时文件生成后（执行完第2步），将日志文件中的操作应用到临时文件，得到一个逻辑数据上与表 A 相同的数据文件，对应的就是图中 state3 的状态；
 5. 用临时文件替换表 A 的数据文件。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-13-04.png)
+![](../images/mysql45/picture/mysql45-13-04.png)
 
 <center>图 4 Online DDL</center>
 可以看到，与图 3 过程的不同之处在于，由于日志文件记录和重放操作这个功能的存在，这个方案在重建表的过程中，允许对表 A 做增删改操作。这也就是 Online DDL 名字的来源。

@@ -61,7 +61,7 @@ MySQL里面表级别的锁有两种：一种时表锁，一种时元数据锁（
 
 > 备注：实验环境是以MySQL5.6。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-06-01.jpg)
+![](../images/mysql45/picture/mysql45-06-01.jpg)
 
 
 

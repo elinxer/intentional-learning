@@ -32,7 +32,7 @@ mysql> select count(*) from tradelog where month(t_modified)=7;
 
 好的，我们看一下 这个 t_modified 索引示意图。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-18-01.png)
+![](../images/mysql45/picture/mysql45-18-01.png)
 
 <center>图 1 t_modified 索引示意图</center>
 在索引那章我们学过， 如果你的 SQL 语句条件用的是 where t_modified='2018-7-1’的话，引擎就会按照上面绿色箭头的路线，快速定位到 t_modified='2018-7-1’需要的结果。
@@ -49,7 +49,7 @@ mysql> select count(*) from tradelog where month(t_modified)=7;
 
 接下来，我们使用 explain 命令，查看一下这条 SQL 语句的执行结果。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-18-02.png)
+![](../images/mysql45/picture/mysql45-18-02.png)
 
 <center>图 2 explain 结果</center>
 key="t_modified"表示的是，使用了 t_modified 这个索引；我在测试表数据中插入了 10 万行数据，rows=100335，说明这条语句扫描了整个索引的所有值；**Extra 字段的 Using index，表示的是使用了覆盖索引。**
@@ -95,7 +95,7 @@ mysql> select * from tradelog where tradeid=110717;
 1. 如果规则是“将字符串转成数字”，那么就是做数字比较，结果应该是 1； 
 2. 如果规则是“将数字转成字符串”，那么就是做字符串比较，结果应该是 0。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-18-03.png)
+![](../images/mysql45/picture/mysql45-18-03.png)
 
 <center>图 3 MySQL 中字符串和数字转换的效果示意图</center>
 从图中可知，select “10” > 9 返回的是 1，所以你就能确认 MySQL 里的转换规则了：在 MySQL 中，字符串和数字做比较的话，是将字符串转换成数字。
@@ -157,7 +157,7 @@ mysql> select d.* form tradelog l,trade_detail d where d.tradeid=l.tradeid and l
 
 接下来，我们看下这个 explain 结果表示的执行流程：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-18-04.png)
+![](../images/mysql45/picture/mysql45-18-04.png)
 
 <center> 图 4 语句 Q1 的执行过程 </center>
 图中：
@@ -202,7 +202,7 @@ CONVERT() 函数，在这里的意思是把输入的字符串转成 utf8mb4 字�
 mysql>select l.operator from tradelog l , trade_detail d where d.tradeid=l.tradeid and d.id=4;
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-18-05.png)
+![](../images/mysql45/picture/mysql45-18-05.png)
 
 <center> 图 6 explain 结果 </center>
  这个语句里 trade_detail 表成了驱动表，但是 explain 结果的第二行显示，这次的查询操作用上了被驱动表 tradelog 里的索引 (tradeid)，扫描行数是 1。 

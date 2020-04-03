@@ -13,7 +13,7 @@ mysql> CREATE TABLE `t` (
 insert into t(id, k) values(1,1),(2,2);
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-08-01.png)
+![](../images/mysql45/picture/mysql45-08-01.png)
 
 <center>图1 事务 A、B、C的执行过程</center>
 > <font color=orange>begin/start transaction</font> 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才会真正的启动。一致性视图时在在执行第一个快照读语句时创建。
@@ -43,7 +43,7 @@ insert into t(id, k) values(1,1),(2,2);
 
 如图2 ，就是一个记录被多个事务连续更新后的状态。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-08-02.png)
+![](../images/mysql45/picture/mysql45-08-02.png)
 
 <center>图2 行状态变更图</center>
 实际上，图2中的三个虚拟箭头就是undo log；而V1、V2、V3并不是物理上真实存在的，而是每次需要的时候根据当前版本和undo log（回滚日志）计算出来的。比如需要V2的时候需要依次执行U3和U2算出来的。
@@ -62,7 +62,7 @@ insert into t(id, k) values(1,1),(2,2);
 
 这个视图数据组把所有的row trx_id 分成了几种不同的情况
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-08-03.png)
+![](../images/mysql45/picture/mysql45-08-03.png)
 
 <center>图3 数据版本可见性规则</center>
 这样,对当前事务的启动瞬间来说，一个数据版本的row trx_id,有以下几种可能：
@@ -87,7 +87,7 @@ insert into t(id, k) values(1,1),(2,2);
 
 为了简化分析，只画出了跟事务A查询逻辑有关的操作：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-08-04.png)
+![](../images/mysql45/picture/mysql45-08-04.png)
 
 <center>图4 事务A查询数据逻辑图</center>
 从图中可以看到，第一个有效更新是事务C，把数据从（1，1）改成了（1，2）。这时候，这个数据的最新版本的row trx_id是102，而90这个版本成为了历史版本。
@@ -116,7 +116,7 @@ insert into t(id, k) values(1,1),(2,2);
 
 你看图5中，事务B的视图数据组是先生成的，之后事务C才提交，不是应该看不见（1，2）吗，怎么算的出来（1，3）来呢？？？
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-08-05.png)
+![](../images/mysql45/picture/mysql45-08-05.png)
 
 <center>图5 事务B更新逻辑图</center>
 是的，**如果事务B在更新之前查询一次数据，这个查询返回的k值的确是1**。
@@ -141,14 +141,14 @@ mysql> select k from t where id=1 for update;
 
 再往前一步，加上事务C不是马上提交，而是变成了下面的事务C’，会怎么样呢？？（<font color="orange">真的是个好问题啊!!!</font>）
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-08-06.png)
+![](../images/mysql45/picture/mysql45-08-06.png)
 
 <center>图6 事务A、B、C‘ 的执行流程</center>
 事务C’ 的不同是，更新并没有马上提交，在他提交前，事务B的更新语句先发起了，前面说个了，虽然事务C‘ 还没有提交，但是（1，2）这个版本已经生成了，并且是当前最新的版本，那么事务B在更新的时候会这么处理呢？
 
 这里我们需要先复习一下一个概念”<font color="orange">两阶段锁协议</font>“：在InnoDB事务中，行锁是在需要的时候加上去的，但并不是不需要了就立即释放。这就是两阶段协议。事务C’虽然启动的比事务B晚，但是事务C‘先更新了k值，所以先锁住了id=1的这一行，而且事务C’没提交，也就是说（1，2）这个版本上的锁还没有释放。而事务B就是当前读，必须读最新版本，而且必须加锁，因此就被锁住了，必须等到事务C‘ 释放这个锁，才能继续它的当前读。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-08-07.png)
+![](../images/mysql45/picture/mysql45-08-07.png)
 
 <center>图7 事务B更新逻辑图（配合事务C’）</center>
 到这里，我们就把一致性读、当前读和行锁就串起来了。
@@ -164,7 +164,7 @@ mysql> select k from t where id=1 for update;
 
 > 这里需要说明一下，“start transaction with consistent snapshot” 的意思是从这个语句开始，创建一个持续整个事务的一致性快照。所以在都提交隔离级别下，这个用法就没有意义了，等同于 start transation。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-08-08.png)
+![](../images/mysql45/picture/mysql45-08-08.png)
 
 <center>图8 都提交隔离级别下的事务状态图</center>
 这时，事务A的查询语句的视图数组是在执行这个语句的时候创建的，时序上（1，2）、（1，3）的生成时间都在创建这个视图数组之前。但是这个时刻：

@@ -47,7 +47,7 @@ mysql> select * from t where id = 1;
 
 如图 1 所示，就是使用 show processlist 命令查看 Waiting for table metadata lock 的示意图
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-01.png)
+![](../images/mysql45/picture/mysql45-19-01.png)
 
 <center>图 2 Waiting for table metadata lock 状态示意图</center>
 出现这个状态表示，**现在有一个线程正在表t上请求或者持有 MDL 写锁，把 select 语句堵住了。**
@@ -56,7 +56,7 @@ mysql> select * from t where id = 1;
 
 不过可用**表锁的语法是 lock tables t write**， 在 MySQL 5.7 版本下复现这个场景 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-02.png)
+![](../images/mysql45/picture/mysql45-19-02.png)
 
 <center>图 2 MySQL 5.7 中 Waiting for table metadata lock 的复现步骤</center>
 session A 通过 lock table 命令持有表 t 的 MDL 写锁，而 session B 的查询需要获取 MDL 读锁。所以，session B 进入等待状态。
@@ -91,7 +91,7 @@ mysql> select * from t where id = 1;
 
 我查出来这个线程的状态是 Waiting for table flush，你可以设想一下这是什么原因。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-03.png)
+![](../images/mysql45/picture/mysql45-19-03.png)
 
 <center>图 3 Waiting for table flush 状态示意图</center>
 这个状态表示的是，现在有一个线程正要对表 t 做 flush 操作。MySQL 里面对表做 flush 操作的用法，一般有两个：
@@ -109,14 +109,14 @@ flush tables t with reda lock;
 
 现在，我们一起来复现一下这种情况，复现步骤如图 4 所示：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-04.png)
+![](../images/mysql45/picture/mysql45-19-04.png)
 
 <center>图 4 Waiting for table flush 的复现步骤</center>
 在 session A 中，我故意每行都调用一次 sleep(1)，这样这个语句默认要执行 10 万秒，在这期间表 t 一直是被 session A“打开”着。然后，session B 的 flush tables t 命令再要去关闭表 t，就需要等 session A 的查询结束。这样，session C 要再次查询的话，就会被 flush 命令堵住了。
 
 #### 解决方法
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-05.png)
+![](../images/mysql45/picture/mysql45-19-05.png)
 
 <center> 图5 kill 掉对应的线程</center>
 ### 等行锁
@@ -133,10 +133,10 @@ mysql> select * from t where id=1 lock in share mode;
 
 复现步骤和现场如下：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-06.png)
+![](../images/mysql45/picture/mysql45-19-06.png)
 
 <center>图 6 行锁复现</center>
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-07.png)
+![](../images/mysql45/picture/mysql45-19-07.png)
 
 <center> 图 7 行锁 show processlist 现场 </center>
 显然，session A 启动了事务，占有写锁，还不提交，是导致 session B 被堵住的原因。
@@ -149,7 +149,7 @@ mysql> select * from t where id=1 lock in share mode;
 mysql> select * from sys.innodb_lock_waits where locked_table='`test`.`t`'
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-08.png)
+![](../images/mysql45/picture/mysql45-19-08.png)
 
 <center> 图 8 通过 sys.innodb_lock_waits 查行锁 </center>
 可以看到，这个信息很全，4 号线程是造成堵塞的罪魁祸首。而干掉这个罪魁祸首的方式，就是 KILL QUERY 4 或 KILL 4。
@@ -172,7 +172,7 @@ mysql> select * from t where c=50000 limit 1;
 
 作为确认，你可以看一下慢查询日志。注意，这里为了把所有语句记录到 slow log 里，我在连接后先执行了 set long_query_time=0，将慢查询日志的时间阈值设置为 0。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-09.png)
+![](../images/mysql45/picture/mysql45-19-09.png)
 
 <center>图 9 全表扫描 5 万行的 slow log</center>
 Rows_examined 显示扫描了 50000 行。你可能会说，不是很慢呀，11.5 毫秒就返回了，我们线上一般都配置超过 1 秒才算慢查询。但你要记住：**坏查询不一定是慢查询**。我们这个例子里面只有 10 万行记录，数据量大起来的话，执行时间就线性涨上去了。
@@ -187,33 +187,33 @@ mysql> select * from t where id=1；
 
  虽然扫描行数是 1，但执行时间却长达 800 毫秒。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-10.png)
+![](../images/mysql45/picture/mysql45-19-10.png)
 
 <center>图 10 扫描一行却执行得很慢</center>
 是不是有点奇怪呢，这些时间都花在哪里了？
 
 如果我把这个 slow log 的截图再往下拉一点，你可以看到下一个语句，select * from t where id=1 lock in share mode，执行时扫描行数也是 1 行，执行时间是 0.2 毫秒。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-11.png)
+![](../images/mysql45/picture/mysql45-19-11.png)
 
 <center>图 10 加上 lock in share mode 的 slow log</center>
 看上去是不是更奇怪了？按理说 lock in share mode 还要加锁，时间应该更长才对啊。
 
 可能有的同学已经有答案了。如果你还没有答案的话，我再给你一个提示信息，图 14 是这两个语句的执行输出结果。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-12.png)
+![](../images/mysql45/picture/mysql45-19-12.png)
 
 <center>图 11两个语句的输出结果</center>
 第一个语句的查询结果里 c=1，带 lock in share mode 的语句返回的是 c=1000001。看到这里应该有更多的同学知道原因了。如果你还是没有头绪的话，也别着急。我先跟你说明一下复现步骤，再分析原因。(我还没有头绪。。。23333)
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-13.png)
+![](../images/mysql45/picture/mysql45-19-13.png)
 
 <center> 图 12 复现步骤 </center>
 你看到了，session A 先用 start transaction with consistent snapshot 命令启动了一个事务，之后 session B 才开始执行 update 语句。
 
 session B 执行完 100 万次 update 语句后，id=1 这一行处于什么状态呢？你可以从图 16 中找到答案。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-19-14.png)
+![](../images/mysql45/picture/mysql45-19-14.png)
 
 <center>图 13 id=1 的数据状态</center>
  session B 更新完 100 万次，生成了 100 万个回滚日志 (undo log)。 

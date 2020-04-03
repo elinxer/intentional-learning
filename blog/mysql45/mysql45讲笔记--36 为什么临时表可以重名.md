@@ -9,7 +9,7 @@
 
 **临时表的特性**
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-36-01.png)
+![](../images/mysql45/picture/mysql45-36-01.png)
 
 <center>图 1 临时表特性示例</center>
 

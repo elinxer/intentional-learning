@@ -2,7 +2,7 @@
 
 如图 1 所示，就是一个基本的一主多从结构：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-27-01.png)
+![](../images/mysql45/picture/mysql45-27-01.png)
 
 <center>图 1 一主多从基本结构</center>
 

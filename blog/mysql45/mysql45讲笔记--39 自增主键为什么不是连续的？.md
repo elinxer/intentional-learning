@@ -62,7 +62,7 @@ insert into t values(null,1,1);
 4.  将表的自增值改成 3； 
 5. 继续执行插入数据操作，由于已经存在 c=1 的记录，所以报 Duplicate key error，语句返回。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-39-01.png)
+![](../images/mysql45/picture/mysql45-39-01.png)
 
 <center> 图1 insert(null, 1,1) 唯一键冲突 </center>
 
@@ -143,7 +143,7 @@ insert…select，实际上往表 t2 中插入了 4 行数据。但是，这四�
 
  我们一起来看一下这个场景： 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-39-02.png)
+![](../images/mysql45/picture/mysql45-39-02.png)
 
 <center>图2  批量插入数据的自增锁 </center>
 

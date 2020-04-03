@@ -48,7 +48,7 @@ select * from t1 straight_join t2 on (t1.a=t2.a);
 
 我们来看一下这条语句的 explain 结果：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-34-01.png)
+![](../images/mysql45/picture/mysql45-34-01.png)
 
 <center> 图 1 使用索引字段 join 的 explain 结果 </center>
 这条语句的**执行流程**：
@@ -120,12 +120,12 @@ select * from t1 straight_join t2 on (t1.a=t2.b);
 1. 把表 t1 的数据读入线程内存 join_buffer 中，由于我们这个语句中写的是 select *因此是把整个表 t1 放入了内存；
 2. 扫描表 t2，把表 t2 中的每一行取出来，跟 join_buffer 中的数据做对比，满足 join 条件的，作为结果集的一部分返回。 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-34-02.png)
+![](../images/mysql45/picture/mysql45-34-02.png)
 
 <center>图 2 Block Nested-Loop Join 算法的执行流程</center>
  对应地，这条 SQL 语句的 explain 结果如下所示： 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-34-03.png)
+![](../images/mysql45/picture/mysql45-34-03.png)
 
 <center> 图 3 不使用索引字段 join 的 explain 结果 </center>
 可以看到，在这个过程中，对表 t1 和 t2 都做了一次全表扫描，因此总的扫描行数是 1100。由于 join_buffer 是以无序数组的方式组织的，因此对表 t2 中的每一行，都要做 100 次判断，总共需要在内存中做的判断次数是：100*1000=10 万次。

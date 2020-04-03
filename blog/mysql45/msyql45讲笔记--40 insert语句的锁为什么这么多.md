@@ -34,10 +34,9 @@ create table t2 like t
 
 **原因：**
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-40-01.png)
+![](../images/mysql45/picture/mysql45-40-01.png)
 
 <center>图 1 并发 insert 场景</center>
-
 实际的执行效果是 ，如果 session B 先执行，由于这个语句对表 t 主键索引加了 (-∞,1]这个 next-key lock，会在语句执行完成后，才允许 session A 的 insert 语句执行。
 
 反证法：
@@ -72,19 +71,19 @@ insert into t(c,d)  (select c+1, d from t force index(c) order by c desc limit 1
 
 1. 查看慢查询日志:
 
-   ![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-40-02.png)
+   ![](../images/mysql45/picture/mysql45-40-02.png)
 
    可以看到这个时候的 Rows_examined 的值是5。
 
 2. 查看explan
 
-   ![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-40-03.png)
+   ![](../images/mysql45/picture/mysql45-40-03.png)
 
    可以看出“Using temporary” 使用了临时表，就是把 t 表中的数据读到临时表中。
 
 3. 查看 InnoDB 扫描了多少行
 
-   ![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-40-04.png)
+   ![](../images/mysql45/picture/mysql45-40-04.png)
 
    这个语句执行前后，Innodb_rows_read 的值增加了 4。因为默认临时表是使用 Memory 引擎的，所以这 4 行查的都是表 t，也就是说对表 t 做了全表扫描
 
@@ -123,10 +122,9 @@ drop table temp_t;
 
 ###  insert 唯一键冲突 
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-40-05.png)
+![](../images/mysql45/picture/mysql45-40-05.png)
 
 <center>图2 唯一键冲突加锁 </center>
-
 **条件：**
 
 - innoDB 引擎的可重复读隔离级别下
@@ -141,10 +139,9 @@ drop table temp_t;
 
 **经典场景**
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-40-06.png)
+![](../images/mysql45/picture/mysql45-40-06.png)
 
 <center> 图 3 唯一键冲突 -- 死锁 </center>
-
 在 session A 执行 rollback 语句回滚的时候，session C 几乎同时发现死锁并返回。
 
 这个死锁产生的逻辑是这样的： 
@@ -173,10 +170,9 @@ insert into t values(2,1,100) on duplicate key update d=100
 
 结果如下：
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-40-07.png)
+![](../images/mysql45/picture/mysql45-40-07.png)
 
 <center>图4 两个唯一键同时冲突 </center>
-
 可以看到，主键 id 是先判断的，MySQL 认为这个语句跟 id=2 这一行冲突，所以修改的是 id=2 的行。
 
 需要注意的是，执行这条语句的 affected rows 返回的是 2，很容易造成误解。实际上，真正更新的只有一行，只是在代码实现上，insert 和 update 都认为自己成功了，update 计数加了 1， insert 计数也加了 1。

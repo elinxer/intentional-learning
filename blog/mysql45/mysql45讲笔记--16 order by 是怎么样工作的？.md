@@ -31,14 +31,14 @@ slelect city,name,age from where city='杭州' order by name limit 1000;
 
 在 city 字段上创建索引之后，我们用 explain 命令来看看这个语句的执行情况。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-01.png)
+![](../images/mysql45/picture/mysql45-16-01.png)
 
 <center>图 1 使用 explain 命令查看语句的执行情况</center>
 **Extra 这个字段总的 “Using filesort” 表示的就是需要排序**，MySQL 会给每个线程分配一块内存用于排序，称之为 **sort_buffer**。
 
 为了说明这个 SQL 查询语句的执行过程，我们先来看一下 city 这个索引的示意图。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-02.png)
+![](../images/mysql45/picture/mysql45-16-02.png)
 
 <center>图 2 city 字段的索引示意图</center>
 从图中可以看到，满足 city=‘杭州’ 条件的行，是从 ID_X 到 ID_(X+N) 的这些记录。
@@ -55,7 +55,7 @@ slelect city,name,age from where city='杭州' order by name limit 1000;
 
 我们暂且把这个排序过程，称为全字段排序，执行流程的示意图如下所示。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-03.png)
+![](../images/mysql45/picture/mysql45-16-03.png)
 
 <center>图 3 全字段排序</center>
 图中 “按 name 排序” 这个动作，可能在内存中完成，也可能需要使用外部排序，这取决于排序所需的内存和参数 sort_buffer_size。
@@ -87,7 +87,7 @@ select @b-@a;
 
 这个方法是通过查看 OPTIMIZER_TRACE 的结果来确认的，你可以从 number_of_tmp_files 中看到是否使用了临时文件。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-04.png)
+![](../images/mysql45/picture/mysql45-16-04.png)
 
 <center>图 4 全排序的 OPTIMIZER_TRACE 部分结果</center>
 number_of_tmp_files 表示的是，排序过程中使用的临时文件数。你一定奇怪，为什么需要 12 个文件？内存放不下时，就需要使用外部排序，外部排序一般使用归并排序算法。可以这么简单理解，**MySQL 将需要排序的数据分成 12 份，每一份单独排序后存在这些临时文件中。然后把这 12 个有序文件再合并成一个有序的大文件**。
@@ -140,7 +140,7 @@ city、name、age 这三个字段的定义总长度是 36，我把 max_length_fo
 
 这个执行流程的示意图如下，我把它称为 rowid 排序。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-05.png)
+![](../images/mysql45/picture/mysql45-16-05.png)
 
 <center>图 5 rowid 排序</center>
 对比图 3 的全字段排序流程图你会发现，rowid 排序多访问了一次表 t 的主键索引，就是步骤 7。
@@ -153,7 +153,7 @@ city、name、age 这三个字段的定义总长度是 36，我把 max_length_fo
 
 因为这时候除了排序过程外，在排序完成后，还要根据 id 去原表取值。由于语句是limit 1000 ,因此 会多读 1000 行
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-06.png)
+![](../images/mysql45/picture/mysql45-16-06.png)
 
 <center>图 6 rowid 排序的 OPTIMIZER_TRACE 部分输出</center>
 从 OPTIMIZER_TRACE 的结果中，你还能看到另外两个信息也变了。
@@ -187,7 +187,7 @@ alter table t add index city_user(city, name);
 
 作为与 city 索引的对比，我们来看看这个索引的示意图。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-07.png)
+![](../images/mysql45/picture/mysql45-16-07.png)
 
 <center>图 7 city 和 name 联合索引示意图</center>
 在这个索引里面，我们依然可以用树搜索的方式定位到第一个满足 city='杭州’的记录，并且额外确保了，接下来按顺序取“下一条记录”的遍历过程中，只要 city 的值是杭州，name 的值就一定是有序的。
@@ -199,12 +199,12 @@ alter table t add index city_user(city, name);
 3. 从索引（city，name）取下一个记录主键 id；
 4. 重复步骤 2、3，直到查到第 1000 条记录，或者是不满足 city='杭州’条件时循环结束。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-08.png)
+![](../images/mysql45/picture/mysql45-16-08.png)
 
 <center>图 8 引入 (city,name) 联合索引后，查询语句的执行计划</center>
 可以看到，这个查询过程不需要临时表，也不需要排序。接下来，我们用 explain 的结果来印证一下。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-09.png)
+![](../images/mysql45/picture/mysql45-16-09.png)
 
 <center>图 9 引入 (city,name) 联合索引后，查询语句的执行计划</center>
 从图中可以看到，Extra 字段中没有 **Using filesort** 了，也就是不需要排序了。而且由于 (city,name) 这个联合索引本身有序，所以这个查询也不用把 4000 行全都读一遍，只要找到满足条件的前 1000 条记录就可以退出了。也就是说，在我们这个例子里，只需要扫描 1000 次。
@@ -225,12 +225,12 @@ alter table t add index city_user_age(city, name, age);
 2.  从索引 (city,name,age) 取下一个记录，同样取出这三个字段的值，作为结果集的一部分直接返回； 
 3. 重复执行步骤 2，直到查到第 1000 条记录，或者是不满足 city='杭州’条件时循环结束。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-10.png)
+![](../images/mysql45/picture/mysql45-16-10.png)
 
 <center>图 10 引入 (city,name,age) 联合索引后，查询语句的执行流程</center>
 然后，我们再来看看 explain 的结果。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-16-11.png)
+![](../images/mysql45/picture/mysql45-16-11.png)
 
 <center> 图 11 引入 (city,name,age) 联合索引后，查询语句的执行计划 </center>
 可以看到，Extra 字段里面多了 **“Using index”** ， 表示的就是使用了覆盖索引， 性能上会快很多。 

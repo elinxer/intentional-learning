@@ -4,7 +4,7 @@
 
 > 我们的引擎默认是InnoDB引擎
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-02-01.png)
+![](../images/mysql45/picture/mysql45-02-01.png)
 
 > 建表语句：
 >
@@ -38,7 +38,7 @@ WAL（Writer-Ahead Logging）技术，这种技术是先写日志，再写磁盘
 
 在InnoDB中 redo log 是固定大小的，比如可以配置一组4个文件，每个文件大小是1GB，那么"缓存文件"就可以记录4GB的操作。redo log 是一个环形数据结构，从头开始写，写到末尾，又开始从头循环写，如下图
 
-![]( https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-02-02.png) 
+![]( ../images/mysql45/picture/mysql45-02-02.png) 
 
 write pos 是当前记录的位置，一边写一边后移（图中顺时针方向），写到3好文件的末尾就回到0号文件的开头。check point就是当前要擦除的位置，也是后推并且循环的，擦除的记录更新到数据文件中。
 
@@ -56,7 +56,7 @@ binlog是msyql Server层的日志文件，称之为binlog（归档日志）
 
 浅绿色表示实在InnoDB内部执行，深色表示在执行器中执行
 
-![操作](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-02-03.png)
+![操作](../images/mysql45/picture/mysql45-02-03.png)
 
 其中最后三步是比较绕的，将redo log 的写入拆成两个步骤：prepare和commit，这就是“两阶段提交”。
 

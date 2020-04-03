@@ -6,7 +6,7 @@
 select * from t1 where a>=1 and a<=100;
 ```
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-35-01.png)
+![](../images/mysql45/picture/mysql45-35-01.png)
 
 <center>图 1 基本回表流程</center>
 
@@ -38,7 +38,7 @@ NLJ 算法执行逻辑是：从驱动表，一行行地取出值，再到驱动�
 
 我们知道 join_buffer 在 BNL 算法里的作用，是暂存驱动表的数据。但是在 NLJ 算法里并没有用。那么，我们刚好就可以复用 join_buffer 到 BKA 算法中。
 
-![](https://raw.githubusercontent.com/dddygin/intentional-learning/master/blog/images/mysql45/picture/mysql45-35-02.png)
+![](../images/mysql45/picture/mysql45-35-02.png)
 
 <center>图 2 Batched Key Access 流程</center>
 
